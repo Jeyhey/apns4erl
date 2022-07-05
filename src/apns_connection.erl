@@ -84,6 +84,7 @@
                          , certfile   => path()
                          , keydata    => keydata()
                          , keyfile    => path()
+                         , key_password => string()
                          , timeout    => integer()
                          , type       := type()
                          , proxy_info => proxy_info()
@@ -413,6 +414,12 @@ keydata(#{keydata := Key}) ->
 keyfile(#{keyfile := Keyfile}) ->
   Keyfile.
 
+-spec password(connection()) -> string().
+password(#{key_password := PW}) ->
+  PW;
+password(_) ->
+  undefined.
+
 -spec type(connection()) -> type().
 type(#{type := Type}) ->
   Type.
@@ -428,11 +435,13 @@ tls_opts(Connection) ->
     certdata ->
       Cert = certdata(Connection),
       Key = keydata(Connection),
-      [{cert, Cert}, {key, Key}];
+      PW = password(Connection),
+      [{cert, Cert}, {key, Key}, {password, PW}];
     cert ->
       Certfile = certfile(Connection),
       Keyfile = keyfile(Connection),
-      [{certfile, Certfile}, {keyfile, Keyfile}];
+      PW = password(Connection),
+      [{certfile, Certfile}, {keyfile, Keyfile}, {password, PW}];
     token ->
       []
   end.
