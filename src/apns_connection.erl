@@ -226,12 +226,12 @@ open_connection(internal, _, #{connection := Connection} = StateData) ->
 open_origin(internal, _, #{connection := Connection} = StateData) ->
   Host = host(Connection),
   Port = port(Connection),
-  TransportOpts = transport_opts(Connection),
+  TransportOpts = tls_opts(Connection),
   {next_state, open_common, StateData,
     {next_event, internal, { Host
                            , Port
                            , #{ protocols      => [http2]
-                              , transport_opts => TransportOpts
+                              , tls_opts => TransportOpts
                               , retry          => 0
                               }}}}.
 
@@ -274,7 +274,7 @@ proxy_connect_to_origin(internal, on_connect, StateData) ->
   #{connection := Connection, gun_pid := GunPid} = StateData,
   Host = host(Connection),
   Port = port(Connection),
-  TransportOpts = transport_opts(Connection),
+  TransportOpts = tls_opts(Connection),
   Destination0 = #{ host => Host
                   , port => Port
                   , protocol => http2
@@ -423,7 +423,7 @@ proxy(#{proxy_info := Proxy}) ->
 proxy(_) ->
   undefined.
 
-transport_opts(Connection) ->
+tls_opts(Connection) ->
   case type(Connection) of
     certdata ->
       Cert = certdata(Connection),
