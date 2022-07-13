@@ -436,12 +436,18 @@ tls_opts(Connection) ->
       Cert = certdata(Connection),
       Key = keydata(Connection),
       PW = password(Connection),
-      [{cert, Cert}, {key, Key}, {password, PW}];
+      case PW of
+        undefined -> [{cert, Cert}, {key, Key}];
+        _ -> [{cert, Cert}, {key, Key}, {password, PW}]
+      end;
     cert ->
       Certfile = certfile(Connection),
       Keyfile = keyfile(Connection),
       PW = password(Connection),
-      [{certfile, Certfile}, {keyfile, Keyfile}, {password, PW}];
+      case PW of
+        undefined -> [{certfile, Certfile}, {keyfile, Keyfile}];
+        _ -> [{certfile, Certfile}, {keyfile, Keyfile}, {password, PW}]
+      end;
     token ->
       []
   end.
