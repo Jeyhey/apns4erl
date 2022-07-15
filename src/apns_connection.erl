@@ -305,16 +305,16 @@ await_tunnel_up(EventType, EventContent, StateData) ->
 connected(internal, on_connect, #{client := Client}) ->
   Client ! {connection_up, self()},
   keep_state_and_data;
-connected( {call, {Client, _} = From}
-         , {push_notification, DeviceId, Notification, Headers}
-         , #{client := Client} = StateData) ->
+connected( {call, {_Client, _} = From}
+         , {push_notification, DeviceId, Notification, Headers}) ->
+         %, #{client := Client} = StateData) ->
   #{connection := Connection, gun_pid := GunPid} = StateData,
   #{timeout := Timeout} = Connection,
   Response = push(GunPid, DeviceId, Headers, Notification, Timeout),
   {keep_state_and_data, {reply, From, Response}};
-connected( {call, {Client, _} = From}
-         , {push_notification, Token, DeviceId, Notification, Headers0}
-         , #{client := Client} = StateData) ->
+connected( {call, {_Client, _} = From}
+         , {push_notification, Token, DeviceId, Notification, Headers0}) ->
+         %, #{client := Client} = StateData) ->
   #{connection := Connection, gun_pid := GunConn} = StateData,
   #{timeout := Timeout} = Connection,
   Headers = add_authorization_header(Headers0, Token),
